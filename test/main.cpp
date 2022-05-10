@@ -34,5 +34,19 @@ private:
 
 TEST_CASE("Logger")
 {
-
+    SECTION("Printing")
+    {
+        CaptureCout captureCout;
+        
+        Logger::setLevel(1 | 2 | 4 | 8);
+        Logger::info() << "Info level" << 1;
+        Logger::warning() << "Warning level" << 2;
+        Logger::error() << "Error level" << 4;
+        Logger::debug() << "Debug level" << 8;
+    
+        REQUIRE(captureCout.data() == "I: Info level 1\n"
+                                      "W: Warning level 2\n"
+                                      "E: Error level 4\n"
+                                      "D: Debug level 8\n");
+    }
 }
