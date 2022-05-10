@@ -1,6 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 #include <logger.hpp>
+#include <thread>
+#include <chrono>
 
 class CaptureCout
 {
@@ -106,5 +108,32 @@ TEST_CASE("Logger")
         
             REQUIRE(captureCout.data() == "D: Debug level 8\n");
         }
+    }
+    
+    SECTION("Thread safety")
+    {
+        CaptureCout captureCout;
+        
+        Logger::setLevel(1 | 2 | 4 | 8);
+        
+        std::thread first([](){
+            auto logger = Logger::info();
+            logger << "start first thread";
+            std::this_thread::sleep_for(std::chrono::milliseconds{100});
+            logger << "end first thread";
+        });
+    
+        std::thread second([](){
+            std::this_thread::sleep_for(std::chrono::milliseconds{100});
+            auto logger = Logger::info();
+            logger << "start second thread";
+            logger << "end second thread";
+        });
+        
+        first.join();
+        second.join();
+    
+        REQUIRE(captureCout.data() == "I: start first thread end first thread\n"
+                                      "I: start second thread end second thread\n");
     }
 }
