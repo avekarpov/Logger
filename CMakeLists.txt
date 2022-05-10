@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_subdirectory(test)
 
 add_library(${PROJECT_NAME} STATIC
+        Readme.md
         include/logger.hpp
         source/logger.cpp)
 
