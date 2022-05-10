@@ -23,22 +23,22 @@ public:
     
     static Logger info()
     {
-        return Logger{"I: ", 1};
+        return Logger{"I:", 1};
     }
     
     static Logger warning()
     {
-        return Logger{"W: ", 2};
+        return Logger{"W:", 2};
     }
     
     static Logger error()
     {
-        return Logger{"E: ", 4};
+        return Logger{"E:", 4};
     }
     
     static Logger debug()
     {
-        return Logger{"D: ", 8};
+        return Logger{"D:", 8};
     }
     
     template<class T>
@@ -54,7 +54,10 @@ public:
     
     ~Logger()
     {
-        std::cout << std::endl;
+        if (_level & _currentLevel)
+        {
+            std::cout << std::endl;
+        }
         _mutex.unlock();
     }
     
@@ -62,7 +65,10 @@ private:
     explicit Logger(const std::string &prefix, uint8_t level) : _currentLevel(level)
     {
         _mutex.lock();
-        std::cout << prefix;
+        if (_level & _currentLevel)
+        {
+            std::cout << prefix;
+        }
     }
     
     static uint8_t _level;
