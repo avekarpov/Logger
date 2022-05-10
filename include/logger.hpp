@@ -9,37 +9,17 @@
 class Logger
 {
 public:
-    static uint8_t setLevel(uint8_t level)
-    {
-        _level = level;
-        
-        return _level;
-    }
+    static uint8_t setLevel(uint8_t level);
     
-    static uint8_t level()
-    {
-        return _level;
-    }
+    static uint8_t level();
     
-    static Logger info()
-    {
-        return Logger{"I:", 1};
-    }
+    static Logger info();
     
-    static Logger warning()
-    {
-        return Logger{"W:", 2};
-    }
+    static Logger warning();
     
-    static Logger error()
-    {
-        return Logger{"E:", 4};
-    }
+    static Logger error();
     
-    static Logger debug()
-    {
-        return Logger{"D:", 8};
-    }
+    static Logger debug();
     
     template<class T>
     Logger &operator<<(T t)
@@ -52,24 +32,10 @@ public:
         return *this;
     }
     
-    ~Logger()
-    {
-        if (_level & _currentLevel)
-        {
-            std::cout << std::endl;
-        }
-        _mutex.unlock();
-    }
+    ~Logger();
     
 private:
-    explicit Logger(const std::string &prefix, uint8_t level) : _currentLevel(level)
-    {
-        _mutex.lock();
-        if (_level & _currentLevel)
-        {
-            std::cout << prefix;
-        }
-    }
+    explicit Logger(const std::string &prefix, uint8_t level);
     
     static uint8_t _level;
     
