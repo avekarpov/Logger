@@ -32,6 +32,14 @@ private:
 
 };
 
+void testPrint()
+{
+    Logger::info() << "Info level" << 1;
+    Logger::warning() << "Warning level" << 2;
+    Logger::error() << "Error level" << 4;
+    Logger::debug() << "Debug level" << 8;
+}
+
 TEST_CASE("Logger")
 {
     SECTION("Printing")
@@ -39,14 +47,64 @@ TEST_CASE("Logger")
         CaptureCout captureCout;
         
         Logger::setLevel(1 | 2 | 4 | 8);
-        Logger::info() << "Info level" << 1;
-        Logger::warning() << "Warning level" << 2;
-        Logger::error() << "Error level" << 4;
-        Logger::debug() << "Debug level" << 8;
+        testPrint();
     
         REQUIRE(captureCout.data() == "I: Info level 1\n"
                                       "W: Warning level 2\n"
                                       "E: Error level 4\n"
                                       "D: Debug level 8\n");
+    }
+    
+    SECTION("Level")
+    {
+        SECTION("None")
+        {
+            CaptureCout captureCout;
+        
+            Logger::setLevel(0);
+            testPrint();
+        
+            REQUIRE(captureCout.data().empty());
+        }
+    
+        SECTION("Info")
+        {
+            CaptureCout captureCout;
+        
+            Logger::setLevel(1);
+            testPrint();
+        
+            REQUIRE(captureCout.data() == "I: Info level 1\n");
+        }
+        
+        SECTION("Warning")
+        {
+            CaptureCout captureCout;
+    
+            Logger::setLevel(2);
+            testPrint();
+    
+            REQUIRE(captureCout.data() == "W: Warning level 2\n");
+        }
+        
+        SECTION("Error")
+        {
+            CaptureCout captureCout;
+    
+            Logger::setLevel(4);
+            testPrint();
+    
+            REQUIRE(captureCout.data() == "E: Error level 4\n");
+        }
+    
+        SECTION("Debug")
+        {
+            CaptureCout captureCout;
+        
+            Logger::setLevel(8);
+            testPrint();
+        
+            REQUIRE(captureCout.data() == "D: Debug level 8\n");
+        }
     }
 }
