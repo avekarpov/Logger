@@ -1,16 +1,16 @@
 ## Simple thread safe logger
 
-<h4>Levels</h4>
+#### Levels
 
 ```c++
 Logger::setLevel(1 | 2 | 4 | 8)
 ```
-1 - info <br/>
-2 - warning <br/>
-4 - error <br/>
-8 - debug <br/>
+- 1 - info
+- 2 - warning
+- 4 - error
+- 8 - debug
 
-<h4>Printing</h4>
+#### Printing
 
 ```c++
 Logger::info() << "What is the answer to all questions?";
@@ -21,9 +21,10 @@ Logger::info() << "Answer is" << 42;
 "I: What is the answer to all questions?"
 "I: Answer is 42"
 ```
-Methods for other levels
+
+##### Methods for other levels
 ```c++
-Logger::warning()
-Logger::error()
-Logger::debug()
+Logger::warning();
+Logger::error();
+Logger::debug();
 ```
