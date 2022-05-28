@@ -3,14 +3,24 @@
 #include <iostream>
 #include <mutex>
 
+using loglevel_t = uint8_t;
+
+enum class ELogLevel : loglevel_t
+{
+    Debug = 15u,
+    Info = 7u,
+    Warning = 3u,
+    Error = 1u,
+    Silent = 0u,
+};
 
 class Logger
 {
 public:
-    static uint8_t setLevel(uint8_t level);
-    
-    static uint8_t level();
-    
+    static ELogLevel setLevel(ELogLevel level);
+
+    static ELogLevel level();
+
     static Logger info();
 
     static Logger warning();
@@ -22,7 +32,7 @@ public:
     template<class T>
     Logger &operator<<(T t)
     {
-        if (_level & _currentLevel)
+        if (static_cast<loglevel_t>(_level) & _currentLevel)
         {
             _stream << " " << t;
         }
@@ -33,14 +43,13 @@ public:
     ~Logger();
 
 private:
-    explicit Logger(const std::string &prefix, uint8_t level);
-    
-    static uint8_t _level;
-    
+    explicit Logger(const std::string &prefix, loglevel_t level);
+
+    static ELogLevel _level;
+
     static std::ostream &_stream;
     static std::mutex _mutex;
-    
-    uint8_t _currentLevel;
-};
 
+    loglevel_t _currentLevel;
+};
 

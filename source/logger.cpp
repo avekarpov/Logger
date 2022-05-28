@@ -1,23 +1,22 @@
 #include "logger.hpp"
 
-uint8_t Logger::_level{};
+ELogLevel Logger::_level{ELogLevel::Info}; // Default level is Info
 std::mutex Logger::_mutex{};
+std::ostream& Logger::_stream{std::cerr}; // Default stream is cerr
 
-uint8_t Logger::setLevel(uint8_t level)
+ELogLevel Logger::setLevel(ELogLevel level)
 {
-    _level = level;
-    
+    return _level = level;
+}
+
+ELogLevel Logger::level()
+{
     return _level;
 }
 
-uint8_t Logger::level()
+Logger Logger::error()
 {
-    return _level;
-}
-
-Logger Logger::info()
-{
-    return Logger{"I:", 1};
+    return Logger{"E:", 1};
 }
 
 Logger Logger::warning()
@@ -25,9 +24,9 @@ Logger Logger::warning()
     return Logger{"W:", 2};
 }
 
-Logger Logger::error()
+Logger Logger::info()
 {
-    return Logger{"E:", 4};
+    return Logger{"I:", 4};
 }
 
 Logger Logger::debug()
@@ -37,19 +36,20 @@ Logger Logger::debug()
 
 Logger::~Logger()
 {
-    if (_level & _currentLevel)
+    if (static_cast<loglevel_t>(_level) & _currentLevel)
     {
-        std::cout << std::endl;
+        _stream << std::endl;
     }
     _mutex.unlock();
 }
 
-Logger::Logger(const std::string &prefix, uint8_t level):
+Logger::Logger(const std::string &prefix, loglevel_t level):
 _currentLevel(level)
 {
     _mutex.lock();
-    if (_level & _currentLevel)
+    if (static_cast<loglevel_t>(_level) & _currentLevel)
     {
-        std::cout << prefix;
+        _stream << prefix;
     }
 }
+
