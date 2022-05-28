@@ -3,7 +3,6 @@
 #include <iostream>
 #include <mutex>
 
-#include <bitset>
 
 class Logger
 {
