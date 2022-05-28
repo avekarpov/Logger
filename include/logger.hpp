@@ -1,8 +1,7 @@
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#pragma once
 
-#include <mutex>
 #include <iostream>
+#include <mutex>
 
 #include <bitset>
 
@@ -14,26 +13,26 @@ public:
     static uint8_t level();
     
     static Logger info();
-    
+
     static Logger warning();
-    
+
     static Logger error();
-    
+
     static Logger debug();
-    
+
     template<class T>
     Logger &operator<<(T t)
     {
         if (_level & _currentLevel)
         {
-            std::cout << " " << t;
+            _stream << " " << t;
         }
-        
+
         return *this;
     }
-    
+
     ~Logger();
-    
+
 private:
     explicit Logger(const std::string &prefix, uint8_t level);
     
@@ -46,4 +45,3 @@ private:
 };
 
 
-#endif //LOGGER_HPP
