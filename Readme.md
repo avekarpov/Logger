@@ -1,29 +1,39 @@
-## Simple thread safety logger
+## Simple thread safe logger
 
-<h4>Levels</h4>
+### Levels
 
 ```c++
-Logger::setLevel(1 | 2 | 4 | 8)
+Logger::setLevel(ELogLevel::Info);
 ```
-1 - info <br/>
-2 - warning <br/>
-4 - error <br/>
-8 - debug <br/>
+#### Available values
+- Debug - Print every log level
+- Info - Print info and lower
+- Warning - Print warning and lower
+- Error - Print error
+- Silent - No output at all
 
-<h4>Printing</h4>
+### Printing
 
 ```c++
+Logger::setLevel(ELogLevel::Info);
+
+// This message will be ignored because log level is set to Info
+Logger::debug() << "I am a debug message you never gonna see :)";
+
 Logger::info() << "What is the answer to all questions?";
 Logger::info() << "Answer is" << 42;
 ```
-
+#### Output:
 ```text
 "I: What is the answer to all questions?"
 "I: Answer is 42"
 ```
-Methods for other levels
+
+#### All methods
 ```c++
-Logger::warning()
-Logger::error()
-Logger::debug()
+Logger::debug();
+Logger::info();
+Logger::warning();
+Logger::error();
 ```
+

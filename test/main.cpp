@@ -4,28 +4,28 @@
 #include <thread>
 #include <chrono>
 
-class CaptureCout
+class CaptureCerr
 {
 public:
-    explicit CaptureCout(std::ostream &stream = std::cout) :
+    explicit CaptureCerr(std::ostream &stream = std::cerr) :
     _stream(stream)
     {
         _sbuf = _stream.rdbuf();
         _stream.rdbuf(_ss.rdbuf());
     }
-    
-    ~CaptureCout()
+
+    ~CaptureCerr()
     {
         _stream.rdbuf(_sbuf);
     }
-    
+
     std::string data() const
     {
         return _ss.str();
     }
-    
-    CaptureCout(const CaptureCout &) = delete;
-    CaptureCout &operator=(const CaptureCout &) = delete;
+
+    CaptureCerr(const CaptureCerr &) = delete;
+    CaptureCerr &operator=(const CaptureCerr &) = delete;
 
 private:
     std::stringstream _ss;
@@ -36,104 +36,111 @@ private:
 
 void testPrint()
 {
-    Logger::info() << "Info level" << 1;
-    Logger::warning() << "Warning level" << 2;
-    Logger::error() << "Error level" << 4;
-    Logger::debug() << "Debug level" << 8;
+    Logger::debug() << "Debug level" << 15;
+    Logger::info() << "Info level" << 7;
+    Logger::warning() << "Warning level" << 3;
+    Logger::error() << "Error level" << 1;
 }
 
 TEST_CASE("Logger")
 {
     SECTION("Printing")
     {
-        CaptureCout captureCout;
-        
-        Logger::setLevel(1 | 2 | 4 | 8);
+        CaptureCerr captureCerr;
+
+        Logger::setLevel(ELogLevel::Debug);
         testPrint();
-    
-        REQUIRE(captureCout.data() == "I: Info level 1\n"
-                                      "W: Warning level 2\n"
-                                      "E: Error level 4\n"
-                                      "D: Debug level 8\n");
+
+        REQUIRE(captureCerr.data() == "D: Debug level 15\n"
+                                      "I: Info level 7\n"
+                                      "W: Warning level 3\n"
+                                      "E: Error level 1\n");
     }
-    
+
     SECTION("Level")
     {
         SECTION("None")
         {
-            CaptureCout captureCout;
-        
-            Logger::setLevel(0);
+            CaptureCerr captureCerr;
+
+            Logger::setLevel(ELogLevel::Silent);
             testPrint();
-        
-            REQUIRE(captureCout.data().empty());
+
+            REQUIRE(captureCerr.data().empty());
         }
-    
-        SECTION("Info")
-        {
-            CaptureCout captureCout;
-        
-            Logger::setLevel(1);
-            testPrint();
-        
-            REQUIRE(captureCout.data() == "I: Info level 1\n");
-        }
-        
-        SECTION("Warning")
-        {
-            CaptureCout captureCout;
-    
-            Logger::setLevel(2);
-            testPrint();
-    
-            REQUIRE(captureCout.data() == "W: Warning level 2\n");
-        }
-        
-        SECTION("Error")
-        {
-            CaptureCout captureCout;
-    
-            Logger::setLevel(4);
-            testPrint();
-    
-            REQUIRE(captureCout.data() == "E: Error level 4\n");
-        }
-    
+
         SECTION("Debug")
         {
-            CaptureCout captureCout;
-        
-            Logger::setLevel(8);
+            CaptureCerr captureCerr;
+
+            Logger::setLevel(ELogLevel::Debug);
             testPrint();
-        
-            REQUIRE(captureCout.data() == "D: Debug level 8\n");
+
+            REQUIRE(captureCerr.data() == "D: Debug level 15\n"
+                                          "I: Info level 7\n"
+                                          "W: Warning level 3\n"
+                                          "E: Error level 1\n");
+        }
+
+        SECTION("Info")
+        {
+            CaptureCerr captureCerr;
+
+            Logger::setLevel(ELogLevel::Info);
+            testPrint();
+
+            REQUIRE(captureCerr.data() == "I: Info level 7\n"
+                                          "W: Warning level 3\n"
+                                          "E: Error level 1\n");
+        }
+
+        SECTION("Warning")
+        {
+            CaptureCerr captureCerr;
+
+            Logger::setLevel(ELogLevel::Warning);
+            testPrint();
+
+            REQUIRE(captureCerr.data() == "W: Warning level 3\n"
+                                          "E: Error level 1\n");
+        }
+
+        SECTION("Error")
+        {
+            CaptureCerr captureCerr;
+
+            Logger::setLevel(ELogLevel::Error);
+            testPrint();
+
+            REQUIRE(captureCerr.data() == "E: Error level 1\n");
         }
     }
-    
+
     SECTION("Thread safety")
     {
-        CaptureCout captureCout;
-        
-        Logger::setLevel(1 | 2 | 4 | 8);
-        
+        CaptureCerr captureCerr;
+
+        Logger::setLevel(ELogLevel::Debug);
+
         std::thread first([](){
             auto logger = Logger::info();
             logger << "start first thread";
             std::this_thread::sleep_for(std::chrono::milliseconds{100});
             logger << "end first thread";
         });
-    
+
         std::thread second([](){
             std::this_thread::sleep_for(std::chrono::milliseconds{100});
             auto logger = Logger::info();
             logger << "start second thread";
             logger << "end second thread";
         });
-        
+
         first.join();
         second.join();
-    
-        REQUIRE(captureCout.data() == "I: start first thread end first thread\n"
+
+        REQUIRE(captureCerr.data() == "I: start first thread end first thread\n"
                                       "I: start second thread end second thread\n");
     }
 }
+
