@@ -1,4 +1,4 @@
-## Simple thread safety logger
+## Simple thread safe logger
 
 <h4>Levels</h4>
 
